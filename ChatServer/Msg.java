@@ -1,7 +1,5 @@
 package ChatServer;
 
-import java.io.IOException;
-
 public class Msg {
 
 	private String type;
@@ -10,9 +8,11 @@ public class Msg {
 	private int msgid;
 
 
-	/*	msg : /post String This is a test.
+	/*	
+	 *	msg : /post String This is a test.
 	 *	msg : /post RectangleWidget 10 20 #8b00ff 60 80
 	 *	msg : /post RectangleWidget 10 20
+	 *
 	 */
 	public Msg(String usr, String msg, int msgid) {
 		String[] splitMsg = msg.split(" ", 3);
