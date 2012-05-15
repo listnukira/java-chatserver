@@ -135,8 +135,7 @@ class clientThread extends java.lang.Thread {
 		}
 
 		/* no user find */
-		sout.println("/msg Error: '" + splitMsg[1] + "' is not online.");
-		logout.println("/msg Error: '" + splitMsg[1] + "' is not online.");
+		sendAndLog("/msg Error: '" + splitMsg[1] + "' is not online.");
 	}
 
 	/*	msg ex: /post String str..
@@ -148,9 +147,7 @@ class clientThread extends java.lang.Thread {
 
 		/* error handle */
 		try {
-			Class<?> c = Class.forName("widgets." + splitMsg[1]);
-		} catch (ClassNotFoundException e) {
-			if (splitMsg[1].equals("String") == false) {
+			if (splitMsg[1].indexOf("Widget") == -1 && splitMsg[1].equals("String") == false) {
 				sendAndLog("/msg Error: No such post type.");
 				return;
 			}
