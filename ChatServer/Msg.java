@@ -12,7 +12,7 @@ public class Msg {
 	 *	msg : /post String This is a test.
 	 *	msg : /post RectangleWidget 10 20 #8b00ff 60 80
 	 *	msg : /post RectangleWidget 10 20
-	 *
+	 *			0		1				2
 	 */
 	public Msg(String usr, String msg, int msgid) {
 		String[] splitMsg = msg.split(" ", 3);
@@ -44,7 +44,7 @@ public class Msg {
 	}
 	
 	public String getContext() {
-		return usr + " " + msgid + " " + type + " " + msg;
+		return String.format("%s %d %s %s", usr, msgid, type, msg);
 	}
 
 	public int getMsgid() {
