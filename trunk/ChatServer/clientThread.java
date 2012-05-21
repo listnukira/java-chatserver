@@ -233,7 +233,38 @@ class clientThread extends java.lang.Thread {
 						m.setMsg(String.format("%s %s %s", splitMsg[2], splitMsg[3], splited[2]));
 					}
 					
-					/* motify all client */
+					/* notify all client */
+					bocast(msg);
+					return;
+				}
+			}
+		}
+		sendAndLog("/msg Permission denied or Object not found.");
+	}
+	
+	/* msg ex: /change 1 true xxx aaa bbb */
+	void changeObj(String msg) {
+		String[] splitMsg = msg.split(" ", 3);
+		
+		/* parse argument */
+		try {
+			if (splitMsg.length != 3 || Integer.parseInt(splitMsg[1]) < 0) {
+				sendAndLog("/msg Error: Wrong arguments.");
+				return;
+			}
+		} catch (IllegalArgumentException e) {
+			sendAndLog("/msg Error: Wrong arguments.");
+			return;
+		}
+		
+		/* midify server side Msg */
+		synchronized (msgPool) {
+			for (Msg m : msgPool) {
+				if (m.getMsgid() == Integer.parseInt(splitMsg[1]) && m.getUsr().equals(name)) {
+					String[] splited = m.getMsg().split(" ", 3);
+					m.setMsg(String.format("%s %s %s", splited[0], splited[1], splitMsg[2]));
+					System.out.println(msg);
+					/* notify all client */
 					bocast(msg);
 					return;
 				}
@@ -293,6 +324,8 @@ class clientThread extends java.lang.Thread {
 					rmPostMsg(cmd);
 				} else if (splitCmd[0].equals("/move")) {
 					moveObj(cmd);
+				} else if (splitCmd[0].equals("/change")) {
+					changeObj(cmd);
 				} else {
 					sendAndLog("/msg *** Your message command '" + splitCmd[0] + "' is incorrect. ***");
 				}
