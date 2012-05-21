@@ -210,31 +210,33 @@ class clientThread extends java.lang.Thread {
 	/* msg ex: /move 1 20 30 */
 	void moveObj(String msg) {
 		String[] splitMsg = msg.split(" ", 4);
+		int x, y;
 		
 		/* parse argument */
 		try {
-			if (splitMsg.length != 4 || Integer.parseInt(splitMsg[2]) < 0 || Integer.parseInt(splitMsg[3]) < 0) {
+			x = Integer.parseInt(splitMsg[2]);
+			y = Integer.parseInt(splitMsg[3]);
+			if (x < 0 || y < 0) {
 				sendAndLog("/msg Error: Wrong arguments.");
 				return;
 			}
-		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
 			sendAndLog("/msg Error: Wrong arguments.");
 			return;
 		}
 		
-		/* midify server side Msg */
+		/* modify server side Msg */
 		synchronized (msgPool) {
 			for (Msg m : msgPool) {
 				if (m.getMsgid() == Integer.parseInt(splitMsg[1]) && m.getUsr().equals(name)) {
 					String[] splited = m.getMsg().split(" ", 3);
 					if (splited.length == 2) {
-						m.setMsg(String.format("%s %s", splitMsg[2], splitMsg[3]));
+						m.setMsg(String.format("%d %d", x, y));
 					} else {
-						m.setMsg(String.format("%s %s %s", splitMsg[2], splitMsg[3], splited[2]));
+						m.setMsg(String.format("%d %d %s", x, y, splited[2]));
 					}
 					
-					/* notify all client */
-					bocast(msg);
+					bocast(msg); // notify all client
 					return;
 				}
 			}
@@ -245,10 +247,12 @@ class clientThread extends java.lang.Thread {
 	/* msg ex: /change 1 true xxx aaa bbb */
 	void changeObj(String msg) {
 		String[] splitMsg = msg.split(" ", 3);
+		int ObjID;
 		
 		/* parse argument */
 		try {
-			if (splitMsg.length != 3 || Integer.parseInt(splitMsg[1]) < 0) {
+			ObjID = Integer.parseInt(splitMsg[1]);
+			if (splitMsg.length != 3 || ObjID < 0) {
 				sendAndLog("/msg Error: Wrong arguments.");
 				return;
 			}
@@ -257,15 +261,13 @@ class clientThread extends java.lang.Thread {
 			return;
 		}
 		
-		/* midify server side Msg */
+		/* modify server side Msg */
 		synchronized (msgPool) {
 			for (Msg m : msgPool) {
-				if (m.getMsgid() == Integer.parseInt(splitMsg[1]) && m.getUsr().equals(name)) {
+				if (m.getMsgid() == ObjID && m.getUsr().equals(name)) {
 					String[] splited = m.getMsg().split(" ", 3);
 					m.setMsg(String.format("%s %s %s", splited[0], splited[1], splitMsg[2]));
-					System.out.println(msg);
-					/* notify all client */
-					bocast(msg);
+					bocast(msg); // notify all client
 					return;
 				}
 			}
@@ -306,8 +308,7 @@ class clientThread extends java.lang.Thread {
 			/* receive client's command */
 			while ((cmd = sin.readLine()) != null) {
 				login.println(cmd);
-				cmd = cmd.trim();
-				String[] splitCmd = cmd.split(" ", 2);
+				String[] splitCmd = cmd.trim().split(" ", 2);
 				if (splitCmd[0].equals("/leave")) {
 					break;
 				} else if (splitCmd[0].equals("/who")) {
