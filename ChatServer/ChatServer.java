@@ -1,5 +1,8 @@
 package ChatServer;
 
+import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
+import java.rmi.RemoteException;
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -44,12 +47,24 @@ public class ChatServer {
 		if (args.length != 1) {
 			usage();
 		}
+		
+		if (System.getSecurityManager() == null) {
+			System.setSecurityManager(new RMISecurityManager());
+		}
+		
 		try {
 			port = Integer.parseInt(args[0]);
+			
+			Compute computeEngine = new ComputeEngine();
+			Naming.rebind("@SERVER", computeEngine);
 			ChatServer Server = new ChatServer();
 			Server.runServer();
 		} catch (IllegalArgumentException e) {
 			usage();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
 	}
 }
