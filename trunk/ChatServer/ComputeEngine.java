@@ -6,9 +6,11 @@ import task.*;
 
 public class ComputeEngine extends UnicastRemoteObject implements Compute {
 	
-	public ComputeEngine() throws RemoteException {}
+	public ComputeEngine() throws RemoteException {
+		super();
+	}
 	
 	public Object executeTask(Task t, String target) {
-		return t;
+		return t.execute();
 	}
 }
