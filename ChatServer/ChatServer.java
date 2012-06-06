@@ -1,16 +1,19 @@
 package ChatServer;
 
-import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.*;
 import java.net.*;
 import java.io.*;
 
+import rmi.*;
+
 public class ChatServer {
 	static int port;
 	int connCount = 0;
-	static Vector<clientThread> clientPool = new Vector<clientThread>(20);
+	public static Vector<clientThread> clientPool = new Vector<clientThread>(20);
 
 	public void runServer() {
 		try {
@@ -55,15 +58,17 @@ public class ChatServer {
 		try {
 			port = Integer.parseInt(args[0]);
 			
-			Compute computeEngine = new ComputeEngine();
-			Naming.rebind("@SERVER", computeEngine);
+			/* rmi server */
+			Compute computeEngine = (Compute) new ComputeEngine();
+			Registry registry = LocateRegistry.createRegistry(1099);
+			registry.rebind("@SERVER", computeEngine);
+			
+			/* chat server */
 			ChatServer Server = new ChatServer();
 			Server.runServer();
 		} catch (IllegalArgumentException e) {
 			usage();
 		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
 	}
