@@ -5,16 +5,16 @@ import java.net.Socket;
 import java.util.Vector;
 import widgets.*;
 
-class clientThread extends java.lang.Thread {
+public class clientThread extends java.lang.Thread {
 
 	static Vector<Msg> msgPool = new Vector<Msg>();
 	static int msgid = 0;
+	public String name = "(Unknown)";
 	int port;
 	Vector<clientThread> clientPool;
 	BufferedReader sin;
 	PrintWriter sout;
 	Socket socket;
-	String name = "(Unknown)";
 	String host;
 	PrintWriter login;
 	PrintWriter logout;
