@@ -1,5 +1,6 @@
 package rmi;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -35,11 +36,21 @@ public class ComputeEngine extends UnicastRemoteObject implements Compute {
 			if (gridify == null) {
 				return task.execute();
 			} else {
+				int clientNum = ChatServer.clientPool.size();
 				Method mapper = task.getClass().getMethod(gridify.mapper(), new Class[] { int.class });
 				Method reducer = task.getClass().getMethod(gridify.reducer(), new Class[] { Vector.class });
+				
+				@SuppressWarnings("unchecked")
+				Vector<Task> map = (Vector<Task>) mapper.invoke(task, new Object[] {clientNum});
 				return task.getClass().getSimpleName();
 			}
 		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		
