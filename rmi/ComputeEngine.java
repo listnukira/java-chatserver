@@ -1,8 +1,10 @@
 package rmi;
 
+import java.lang.reflect.Method;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Vector;
 
 import task.*;
 import ChatServer.*;
@@ -25,6 +27,25 @@ public class ComputeEngine extends UnicastRemoteObject implements Compute {
 		}
 	}
 	
+	public Object serverExecuteTask(Task task, String target) {
+		try {
+			Method executeMethod = task.getClass().getMethod("execute", new Class[] {});
+			Gridify gridify = executeMethod.getAnnotation(Gridify.class);
+			
+			if (gridify == null) {
+				return task.execute();
+			} else {
+				Method mapper = task.getClass().getMethod(gridify.mapper(), new Class[] { int.class });
+				Method reducer = task.getClass().getMethod(gridify.reducer(), new Class[] { Vector.class });
+				return task.getClass().getSimpleName();
+			}
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		
+		return task.execute();
+	}
+	
 	public Object executeTask(Task task, String target) {
 		
 		synchronized (ChatServer.clientPool) {
@@ -39,9 +60,9 @@ public class ComputeEngine extends UnicastRemoteObject implements Compute {
 		if (mode == 1) {
 			return clientExecuteTask(task, target);
 		} else {
-			return task.execute();
+			return serverExecuteTask(task, target);
+			//Method executeMethod = task.getClass().getMethod("execute", new Class[] {});
 		}
-		//return t.execute();
 	}
 	
 }
