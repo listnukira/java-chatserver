@@ -62,7 +62,6 @@ public class ChatServer {
 			Compute computeEngine = (Compute) new ComputeEngine();
 			Registry registry = LocateRegistry.createRegistry(1099);
 			registry.rebind("@SERVER", computeEngine);
-			
 			/* chat server */
 			ChatServer Server = new ChatServer();
 			Server.runServer();
