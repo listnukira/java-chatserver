@@ -27,15 +27,16 @@ public class GridifyPrime implements Task {
 	
 	public Vector<GridifyPrime> primeMapper(int num) {
 		Vector<GridifyPrime> tasks = new Vector<GridifyPrime>(num);
-		long diff = prime / num;
-		long p = 2;
-		while (p < prime) {
-			long min = p;
-			long max = p + diff;
-			if (max > prime)
-				max = prime - 1;
-			tasks.add(new GridifyPrime(String.format("%d %d %d", prime, min, max)));
-			p = p + diff;
+		long diff = (max - min + 1) / num;
+		long start = min;
+		long end = min + diff - 1;
+		
+		for (int i = 0; i < num; ++i) {
+			if (end > max || i + 1 == num)
+				end = max;
+			tasks.add(new GridifyPrime(String.format("%d %d %d", prime, start, end)));
+			start = end + 1;
+			end = start + diff - 1;
 		}
 		return tasks;
 	}
